@@ -34,13 +34,12 @@
 </template>
   
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
-import { findNodeFromTree, TreeViewItem } from "../utils";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "FileTree",
   props: ["currentTree", "paths"],
-  setup() {
+  setup(props, context) {
     const startDrag = (evt: any, path: string) => {
       evt.dataTransfer.dropEffect = "move";
       evt.dataTransfer.effectAllowed = "move";
@@ -53,9 +52,7 @@ export default defineComponent({
       if (childPath === parentPath) {
         return;
       }
-
-      console.log(parentPath);
-      console.log(childPath);
+      context.emit("nodeChange", { childPath, parentPath });
     };
 
     return { startDrag, onDrop };

@@ -1,6 +1,7 @@
 export interface TreeViewItem {
   name: string;
   path: string;
+  parentPath?: string;
   children: TreeViewItem[];
 }
 
@@ -16,6 +17,7 @@ export const pathsToTree = (paths: string[]): TreeViewItem[] => {
         pathUnit.result.push({
           name,
           path: pathUnits.slice(0, index + 1).join("/"),
+          parentPath: pathUnits.slice(0, index).join("/"),
           children: pathUnit[name].result,
         });
       }
@@ -48,4 +50,20 @@ export const findNodeFromTree = (
   }
 
   return null;
+};
+
+export const updatePath = (
+  childNode: TreeViewItem,
+  parentNode: TreeViewItem
+) => {
+  childNode.parentPath = parentNode.path;
+
+  const parentPathSlice = parentNode.path.split("/");
+  childNode.path =
+    parentPathSlice.slice(0, parentPathSlice.length - 1).join("/") +
+    childNode.path;
+
+  childNode.children.forEach((node) => {
+    updatePath(node, childNode);
+  });
 };

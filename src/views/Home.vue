@@ -14,6 +14,7 @@
     :paths="paths"
     @changePath="changePath"
     @pathClick="pathClick"
+    @nodeChange="nodeChange"
   />
 </template>
 
@@ -23,7 +24,12 @@ import { ref, defineComponent, computed } from "vue";
 import { fromEvent } from "file-selector";
 
 import FileTree from "../components/FileTree.vue";
-import { findNodeFromTree, pathsToTree, TreeViewItem } from "../utils";
+import {
+  findNodeFromTree,
+  updatePath,
+  pathsToTree,
+  TreeViewItem,
+} from "../utils";
 
 export default defineComponent({
   components: { FileTree },
@@ -70,7 +76,48 @@ export default defineComponent({
       changePath(newPath);
     };
 
-    return { onDrop, currentTree, paths, changePath, pathClick };
+    const nodeChange = ({
+      childPath,
+      parentPath,
+    }: {
+      childPath: string;
+      parentPath: string;
+    }) => {
+      let childNode = findNodeFromTree(
+        tree.value,
+        (node) => node.path === childPath
+      );
+
+      const parentNode = findNodeFromTree(
+        tree.value,
+        (node) => node.path === parentPath
+      );
+
+      parentNode.children.push(childNode);
+
+      const directParentNode = findNodeFromTree(
+        tree.value,
+        (node) => node.path === childNode.parentPath
+      );
+
+      childNode.parentPath = parentNode.path;
+      childNode.path = parentNode.path + childNode.path;
+
+      childNode.children.forEach((node) => {
+        updatePath(node, childNode);
+      });
+
+      if (directParentNode) {
+        const index = directParentNode.children.indexOf(childNode);
+        directParentNode.children.splice(index, 1);
+        return;
+      }
+
+      const index = tree.value.indexOf(childNode);
+      tree.value.splice(index, 1);
+    };
+
+    return { onDrop, currentTree, paths, changePath, pathClick, nodeChange };
   },
 });
 </script>
