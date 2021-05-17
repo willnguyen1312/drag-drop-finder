@@ -26,3 +26,26 @@ export const pathsToTree = (paths: string[]): TreeViewItem[] => {
 
   return result[0].children.length === 0 ? result : result[0].children;
 };
+
+export const findNodeFromTree = (
+  menuData: TreeViewItem[],
+  predicate: (menuItem: TreeViewItem) => boolean
+): TreeViewItem | null => {
+  const stack: TreeViewItem[] = [];
+  stack.push(...menuData);
+  let node: TreeViewItem;
+
+  while (stack.length) {
+    node = stack.pop() as TreeViewItem;
+
+    if (predicate(node)) {
+      return node;
+    }
+
+    if (node.children?.length) {
+      stack.push(...node.children);
+    }
+  }
+
+  return null;
+};

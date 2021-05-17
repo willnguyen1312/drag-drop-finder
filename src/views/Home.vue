@@ -8,9 +8,7 @@
     Here goes your content. You can also go the About page.
   </div>
 
-  <font-awesome-icon icon="user-secret" />
-
-  <FileTree :tree="tree" />
+  <FileTree v-if="tree.length > 0" :tree="tree" />
 </template>
 
 
@@ -31,7 +29,6 @@ export default defineComponent({
       const files = await fromEvent(event);
 
       tree.value = pathsToTree(files.map((file: any) => file.path));
-      console.log(tree);
     };
 
     return { onDrop, tree };
