@@ -8,6 +8,8 @@
     Here goes your content. You can also go the About page.
   </div>
 
+  <font-awesome-icon icon="user-secret" />
+
   <FileTree :tree="tree" />
 </template>
 

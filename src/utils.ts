@@ -24,5 +24,5 @@ export const pathsToTree = (paths: string[]): TreeViewItem[] => {
     }, level);
   });
 
-  return result;
+  return result[0].children.length === 0 ? result : result[0].children;
 };
