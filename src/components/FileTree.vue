@@ -4,7 +4,7 @@
     v-for="(_, index) in paths"
     :key="index"
     class="text-2xl font-medium mt-2 cursor-pointer"
-    @click="onPathClick(index)"
+    @click="$emit('pathClick', index)"
   >
     {{
       `${paths[index]}${index === 0 || index === paths.leng - 1 ? "" : " / "}`
@@ -13,8 +13,13 @@
 
   <ul class="mt-2" v-for="node in currentTree" :key="node.path">
     <li
+      draggable="true"
       class="flex items-end text-lg cursor-pointer"
-      @click="node.children.length > 0 && changePath(node.path)"
+      @click="node.children.length > 0 && $emit('changePath', node.path)"
+      @drop="onDrop($event, node.path)"
+      @dragenter.prevent
+      @dragover.prevent
+      @dragstart="startDrag($event, node.path)"
     >
       <font-awesome-icon
         :icon="node.children.length > 0 ? 'folder' : 'file'"
@@ -34,44 +39,26 @@ import { findNodeFromTree, TreeViewItem } from "../utils";
 
 export default defineComponent({
   name: "FileTree",
-  props: ["tree"],
-  setup({ tree }: { tree: TreeViewItem[] }) {
-    const currentPath = ref<string>("");
-
-    const currentTree = computed(() => {
-      const currentPathValue = currentPath.value;
-
-      if (!currentPathValue) {
-        return tree;
-      }
-
-      const newTree = findNodeFromTree(
-        tree,
-        (node) => node.path === currentPathValue
-      );
-
-      return newTree.children;
-    });
-
-    const paths = computed(() => {
-      return ["Root"].concat(currentPath.value.split("/"));
-    });
-
-    const changePath = (path: string) => {
-      currentPath.value = path;
+  props: ["currentTree", "paths"],
+  setup() {
+    const startDrag = (evt: any, path: string) => {
+      evt.dataTransfer.dropEffect = "move";
+      evt.dataTransfer.effectAllowed = "move";
+      evt.dataTransfer.setData("path", path);
     };
 
-    const onPathClick = (index: number) => {
-      if (index === 0) {
-        changePath("");
+    const onDrop = (evt: any, parentPath: string) => {
+      evt.preventDefault();
+      const childPath = evt.dataTransfer.getData("path");
+      if (childPath === parentPath) {
         return;
       }
 
-      const newPath = `${paths.value.slice(1, index + 1).join("/")}`;
-      changePath(newPath);
+      console.log(parentPath);
+      console.log(childPath);
     };
 
-    return { paths, changePath, currentTree, onPathClick };
+    return { startDrag, onDrop };
   },
 });
 </script>
