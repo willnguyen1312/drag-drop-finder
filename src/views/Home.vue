@@ -20,10 +20,9 @@
 
 
 <script lang="ts">
-import { ref, defineComponent, computed } from "vue";
+import { ref, defineComponent, defineAsyncComponent, computed } from "vue";
 import { fromEvent } from "file-selector";
 
-import FileTree from "../components/FileTree.vue";
 import {
   findNodeFromTree,
   updatePath,
@@ -31,8 +30,12 @@ import {
   TreeViewItem,
 } from "../utils";
 
+const AsyncFileTree = defineAsyncComponent(
+  () => import("../components/FileTree.vue")
+);
+
 export default defineComponent({
-  components: { FileTree },
+  components: { FileTree: AsyncFileTree },
   setup() {
     const tree = ref<TreeViewItem[]>([]);
     const currentPath = ref<string>("");
