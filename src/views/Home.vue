@@ -5,7 +5,7 @@
     @dragover.prevent
     class="border-4 border-dashed border-gray-200 rounded-lg h-96 p-4 text-center text-gray-400"
   >
-    Here goes your content. You can also go the About page.
+    Here goes your folder(s) content
   </div>
 
   <FileTree
@@ -17,7 +17,6 @@
     @nodeChange="nodeChange"
   />
 </template>
-
 
 <script lang="ts">
 import { ref, defineComponent, defineAsyncComponent, computed } from "vue";
